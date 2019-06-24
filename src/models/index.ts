@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import * as config from '../config';
-import { Category } from './category.model'
+import { Asset } from './asset.model'
 
 export const sequelize = new Sequelize({
   host: config.dbEndpoint,
@@ -13,7 +13,7 @@ export const sequelize = new Sequelize({
 });
 
 sequelize.addModels([
-  Category
+  Asset
 ])
 
-export { Category } from './category.model';
+export { Asset } from './asset.model';

@@ -2,7 +2,7 @@ import { Table, Column, Model, CreatedAt, UpdatedAt, IsUUID, IsAlpha, PrimaryKey
 import uuidV4 from 'uuid/v4'
 
 @Table
-export class Category extends Model<Category> {
+export class Asset extends Model<Asset> {
  
   @IsUUID(4)
   @PrimaryKey
@@ -19,7 +19,7 @@ export class Category extends Model<Category> {
 
   @AllowNull(true)
   @Default(null)
-  @ForeignKey(() => Category)
+  @ForeignKey(() => Asset)
   @Column
   parentId?: string;
 
@@ -39,16 +39,16 @@ export class Category extends Model<Category> {
   @Column
   updatedAt!: Date;
 
-  @HasMany(() => Category, 'parentId')
-  children: Category[] | undefined
+  @HasMany(() => Asset, 'parentId')
+  children: Asset[] | undefined
 
   @BeforeCreate
-  static async generateId(instance: Category) {
+  static async generateId(instance: Asset) {
     instance.id = uuidV4();
   }
 
   @BeforeCreate
-  static async generateSlug(instance: Category) {
+  static async generateSlug(instance: Asset) {
     const a = 'àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;';
     const b = 'aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------';
     const p = new RegExp(a.split('').join('|'), 'g');

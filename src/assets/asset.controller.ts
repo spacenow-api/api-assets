@@ -1,12 +1,12 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
 import authMiddleware from '../helpers/middlewares/auth-middleware';
-import ICategory from './category.interface';
-import { Category } from '../models';
+import IAsset from './asset.interface';
+import { Asset } from '../models';
  
-class CategoryController {
+class AssetController {
 
-  public path = '/categories';
+  public path = '/assets';
   public router = Router();
   
   constructor() {
@@ -14,40 +14,40 @@ class CategoryController {
   }
  
   private intializeRoutes() {
-    this.router.get(this.path, this.getRootCategories);
-    this.router.get(`${this.path}/:id`, this.getCategory);
-    this.router.post(this.path, authMiddleware, this.createCategory);
-    this.router.patch(this.path, authMiddleware, this.createCategory);
+    this.router.get(this.path, this.getRootAssets);
+    this.router.get(`${this.path}/:id`, this.getAsset);
+    this.router.post(this.path, authMiddleware, this.createAsset);
+    this.router.patch(this.path, authMiddleware, this.createAsset);
   }
  
-  private getRootCategories = async (request: Request, response: Response, next: NextFunction) => {
+  private getRootAssets = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const categories: ICategory[] = await Category.findAll({ where: {parentId: null} });
-      response.send(categories);
+      const assets: IAsset[] = await Asset.findAll({ where: {parentId: null} });
+      response.send(assets);
     } catch (error) {
       console.log(error)
       sequelizeErrorMiddleware(error, request, response, next);
     }
   }
 
-  private getCategory = async (request: Request, response: Response, next: NextFunction) => {
+  private getAsset = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const category: ICategory = await Category.findOne({ 
+      const asset: IAsset = await Asset.findOne({ 
         where: {id: request.params.id}, 
-        include: [{ model: Category, as: 'children' }]
+        include: [{ model: Asset, as: 'children' }]
       });
-      response.send(category);
+      response.send(asset);
     } catch (error) {
       console.log(error)
       sequelizeErrorMiddleware(error, request, response, next);
     }
   }
  
-  private createCategory = async (request: Request, response: Response, next: NextFunction) => {
+  private createAsset = async (request: Request, response: Response, next: NextFunction) => {
     const data = request.body;
     try {
-      const category = await Category.create(data);
-      response.send(category);
+      const asset = await Asset.create(data);
+      response.send(asset);
     } catch (error) {
       sequelizeErrorMiddleware(error, request, response, next);
     }
@@ -55,4 +55,4 @@ class CategoryController {
 
 }
  
-export default CategoryController;
+export default AssetController;

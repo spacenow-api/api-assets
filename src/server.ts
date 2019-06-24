@@ -1,11 +1,11 @@
 import App from './App';
-import CategoriesController from './categories/category.controller';
+import AssetsController from './assets/asset.controller';
  
 const app = new App(
   [
-    new CategoriesController(),
+    new AssetsController(),
   ],
-  3003,
+  3004,
   '0.0.0.0'
 );
  

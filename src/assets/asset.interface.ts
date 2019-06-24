@@ -1,4 +1,4 @@
-interface ICategory {
+interface IAsset {
   id: string;
   name: string;
   slug: string;
@@ -7,4 +7,4 @@ interface ICategory {
   isActive: boolean;
 }
 
-export default ICategory;
+export default IAsset;
