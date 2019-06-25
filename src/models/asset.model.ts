@@ -23,7 +23,7 @@ export class Asset extends Model<Asset> {
   accessUrl!: string;
 
   @Column
-  attributes!: [string];
+  attributes!: string;
 
   @Default('public-read')
   @Column
