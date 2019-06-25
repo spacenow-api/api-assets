@@ -1,5 +1,5 @@
 import App from './App';
-import AssetsController from './assets/asset.controller';
+import AssetsController from './controllers/asset.controller';
  
 const app = new App(
   [

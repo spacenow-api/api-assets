@@ -9,23 +9,25 @@ export class Asset extends Model<Asset> {
   @Column
   id!: string;
  
+  @Column
+  title!: string;
+
+  @Column
+  description!: string;
+
+  @Column
+  filename!: string;
+
   @Unique
-  @IsAlpha
   @Column
-  name!: string;
+  accessUrl!: string;
 
   @Column
-  slug!: string;
+  attributes!: [string];
 
-  @AllowNull(true)
-  @Default(null)
-  @ForeignKey(() => Asset)
+  @Default('public-read')
   @Column
-  parentId?: string;
-
-  @Default(0)
-  @Column
-  order!: number;
+  accessControl!: string;
 
   @Default(true)
   @Column
@@ -39,27 +41,9 @@ export class Asset extends Model<Asset> {
   @Column
   updatedAt!: Date;
 
-  @HasMany(() => Asset, 'parentId')
-  children: Asset[] | undefined
-
   @BeforeCreate
   static async generateId(instance: Asset) {
     instance.id = uuidV4();
   }
 
-  @BeforeCreate
-  static async generateSlug(instance: Asset) {
-    const a = 'àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;';
-    const b = 'aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------';
-    const p = new RegExp(a.split('').join('|'), 'g');
-    instance.slug = instance.name.toString().toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(p, c => b.charAt(a.indexOf(c)))
-      .replace(/&/g, '-and-')
-      .replace(/[^\w\-]+/g, '')
-      .replace(/\-\-+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '')
-  };
- 
 }
