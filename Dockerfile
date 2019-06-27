@@ -1,27 +1,26 @@
 # The instructions for the first stage
-FROM node:10-alpine as first-stage
-
-RUN mkdir /app
+FROM node:10.16.0-alpine as first-stage
 
 WORKDIR /app
 
-ADD . /app
-ADD yarn.lock /app/yarn.lock
-ADD package.json /app/package.json
+COPY yarn.lock ./
+COPY package.json ./
 
-ENV PATH /app/node_modules/.bin:$PATH
+ENV PATH ./node_modules/.bin:$PATH
 
-RUN yarn install --frozen-lockfile
+RUN yarn
+
+COPY . .
+
 RUN yarn build
 
 # The instructions for the second stage
-FROM node:10-jessie-slim
+FROM node:10.16.0-jessie-slim
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY --from=first-stage node_modules node_modules
-COPY . .
+COPY --from=first-stage /app ./
 
-EXPOSE 3001
+EXPOSE 6001
 
-ENTRYPOINT ["node /app/dist/server.js"]
+CMD ["yarn", "start"]

@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10-alpine
+      - image: circleci/node:10.16.0
     working_directory: ~/repo
     steps:
       - checkout
@@ -10,10 +10,11 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "yarn.lock" }}
+            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run:
           name: Install Dependencies
-          command: yarn --frozen-lockfile
+          command: yarn
       - save_cache:
           name: Save Yarn Package Cache
           paths:
@@ -23,13 +24,13 @@ jobs:
           name: Set convenience environment variables
           command: |
             echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
-            echo ${AWS_RESOURCE_NAME_PREFIX}
             echo 'export APP_SLICE="$(echo ${CIRCLE_BRANCH} | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]' )"' >> $BASH_ENV
             echo 'export IMAGE_TAG="${APP_SLICE}-$(echo $CIRCLE_SHA1 | cut -c -7)"' >> $BASH_ENV
             echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}"' >> $BASH_ENV
       - run:
           name: Build Production Docker
-          command: docker build -t $FULL_IMAGE_NAME .
+          command: |
+            docker build -t $FULL_IMAGE_NAME .
       - run:
           name: Save image to an archive
           command: |
@@ -63,7 +64,7 @@ jobs:
       - save_cache:
           key: v1-awscli
           paths:
-            - 'venv'
+            - "venv"
       - run:
           name: Load image
           command: |
