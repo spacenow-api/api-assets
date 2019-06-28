@@ -1,10 +1,11 @@
-import express, { Application } from 'express';
-import cookieParse from 'cookie-parser';
-import bodyParser from 'body-parser';
+import express, { Application } from "express";
+import cookieParse from "cookie-parser";
+import bodyParser from "body-parser";
 
-import loggerMiddleware from './helpers/middlewares/logger-middleware';
-import errorMiddleware from './helpers/middlewares/error-middleware';
-import sequelizeMiddleware from './helpers/middlewares/sequelize-middleware';
+import loggerMiddleware from "./helpers/middlewares/logger-middleware";
+import errorMiddleware from "./helpers/middlewares/error-middleware";
+import sequelizeMiddleware from "./helpers/middlewares/sequelize-middleware";
+import sequelize from "./helpers/database/sequelize";
 
 class App {
   public app: Application;
@@ -16,8 +17,13 @@ class App {
     this.port = port;
     this.host = host;
     this.initializeMiddlewares();
+    this.initializeDatabase();
     this.initializeControllers(controllers);
     this.initializeErrorHandling();
+  }
+
+  private initializeDatabase(): void {
+    sequelize.initialize();
   }
 
   private initializeMiddlewares(): void {
@@ -33,7 +39,7 @@ class App {
 
   private initializeControllers(controllers: any): void {
     controllers.forEach((controller: any) => {
-      this.app.use('/', controller.router);
+      this.app.use("/", controller.router);
     });
   }
 

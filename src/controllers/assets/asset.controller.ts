@@ -15,8 +15,8 @@ class AssetController {
   private intializeRoutes() {
     this.router.get(this.path, this.getAssets);
     this.router.get(`${this.path}/:id`, this.getAsset);
-    this.router.post(this.path, authMiddleware, this.createAsset);
-    this.router.patch(this.path, authMiddleware, this.createAsset);
+    this.router.post(this.path, this.createAsset);
+    this.router.patch(this.path, this.createAsset);
   }
 
   private getAssets = async (
