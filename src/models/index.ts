@@ -1,5 +1,5 @@
-import { Asset } from "./asset.model";
+import { Asset } from './asset.model';
+
+export { Asset };
 
 export const arrayOfModels = [Asset];
-
-export { Asset } from "./asset.model";
