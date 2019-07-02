@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 import authMiddleware from "../../helpers/middlewares/auth-middleware";
-import IAsset, { IAssetItem } from "./asset.interface";
+import IAsset from "./asset.interface";
 import { Asset } from "../../models";
+import upload from "../../services/image.upload.service";
 
 class AssetController {
   public path = "/assets";
@@ -54,13 +55,31 @@ class AssetController {
     response: Response,
     next: NextFunction
   ) => {
-    const data: IAsset = request.body;
     try {
-      const asset = await Asset.create(data);
-      response.send(asset);
+      await upload.single("photo")(request, response, async err => {
+        if (err) response.send(err);
+        else {
+          const file: any = request.file;
+          const filename: string = file["original"].key.replace(
+            "-original",
+            ""
+          );
+          try {
+            const data = request.body;
+            const asset: IAsset = await Asset.create({
+              ...data,
+              filename
+            });
+            response.send(asset);
+          } catch (error) {
+            console.log(error);
+            sequelizeErrorMiddleware(error, request, response, next);
+          }
+        }
+      });
     } catch (error) {
-      console.log(error);
-      sequelizeErrorMiddleware(error, request, response, next);
+      response.send(error);
+      // sequelizeErrorMiddleware(error, request, response, next);
     }
   };
 }

@@ -1,18 +1,20 @@
 import { Request } from "express";
-import aws from "aws-sdk";
+import * as AWS from "aws-sdk";
 import multer from "multer";
-import multerS3 from "multer-s3";
+import s3Storage from "multer-sharp-s3";
 import * as config from "../config";
 
-aws.config.update({
+const AWS_S3_BUCKET_NAME = config.bucket || "";
+const s3 = new AWS.S3();
+const filename = `spacenow-${Date.now()}`;
+
+AWS.config.update({
   secretAccessKey: config.awsSecretAccessKey,
   accessKeyId: config.awsAccessKeyId,
   region: "ap-southeast-2"
 });
 
-const s3 = new aws.S3();
-
-const fileFilter = (
+const imageFilter = (
   request: Express.Request,
   file: Express.Multer.File,
   callback: (error: Error | null, acceptFile: boolean) => void
@@ -28,30 +30,38 @@ const fileFilter = (
 };
 
 const options = {
-  acl: "public-read",
+  ACL: "public-read",
   s3,
-  bucket: config.bucket
+  Bucket: `${AWS_S3_BUCKET_NAME}`
 };
 
-const metadata = (
+const Resize = (
   request: Request,
   file: Express.Multer.File,
   callback: (error: any, metadata?: any) => void
-): void => callback(null, Object.assign({}, request.body));
+): void => callback(null, Object.assign({}, { fieldname: file.fieldname }));
 
-const key = (
+const Key = (
   request: Request,
-  file: Express.Multer.File,
+  file: any,
   callback: (error: any, metadata?: any) => void
-): void => callback(null, request.params.id + ".jpg");
+): void => callback(null, `${request.query.id}/${filename}`);
 
 const upload = multer({
-  fileFilter,
-  storage: multerS3({
+  fileFilter: imageFilter,
+  storage: s3Storage({
     ...options,
-    metadata,
-    key
+    Key,
+    multiple: true,
+    resize: [
+      { suffix: "lg", width: 1170 },
+      { suffix: "md", width: 800 },
+      { suffix: "sm", width: 400 },
+      { suffix: "xs", width: 100 },
+      { suffix: "original" }
+    ],
+    toFormat: "jpeg"
   })
 });
 
-module.exports = upload;
+export default upload;

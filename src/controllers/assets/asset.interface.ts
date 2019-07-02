@@ -2,14 +2,13 @@ interface IAsset {
   id: string;
   title: string;
   description: string;
-  file: File;
-  accessPermission: string;
+  filename: string;
+  accessControl: string;
   isActive: boolean;
 }
 
-interface IAssetItem extends IAsset {
-  accessUrl: string;
-  fileName: string;
+interface IAssetSize {
+  path: string;
 }
 
-export { IAsset as default, IAssetItem };
+export { IAsset as default, IAssetSize };

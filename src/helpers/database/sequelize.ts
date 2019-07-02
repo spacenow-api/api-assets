@@ -18,6 +18,7 @@ const initialize = () => {
     });
     sequelize.addModels(arrayOfModels);
   }
+  sequelize.sync();
 };
 
 export default { initialize };
