@@ -1,9 +1,13 @@
 import { Router, Request, Response, NextFunction } from "express";
-import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
+
+import uuidV4 from "uuid/v4";
+
 import authMiddleware from "../../helpers/middlewares/auth-middleware";
+import validationMiddleware from "../../helpers/middlewares/validation-middleware";
 import IAsset from "./asset.interface";
-import { Asset } from "../../models";
+import Asset, { AssetDTO } from "../../models";
 import upload from "../../services/image.upload.service";
+import { dynamoDB } from "../../helpers/database/dynamo";
 
 class AssetController {
   public path = "/assets";
@@ -16,7 +20,11 @@ class AssetController {
   private intializeRoutes() {
     this.router.get(this.path, this.getAssets);
     this.router.get(`${this.path}/:id`, this.getAsset);
-    this.router.post(this.path, this.createAsset);
+    this.router.post(
+      `${this.path}/:folder`,
+      // validationMiddleware(AssetDTO),
+      this.createAsset
+    );
     this.router.patch(this.path, this.createAsset);
   }
 
@@ -26,11 +34,13 @@ class AssetController {
     next: NextFunction
   ) => {
     try {
-      const assets = await Asset.findAll({ where: { parentId: null } });
+      const assets = Array<Asset>();
+      for await (const item of dynamoDB.scan(Asset)) {
+        assets.push(item);
+      }
       response.send(assets);
     } catch (error) {
-      console.log(error);
-      sequelizeErrorMiddleware(error, request, response, next);
+      response.send(error);
     }
   };
 
@@ -40,13 +50,11 @@ class AssetController {
     next: NextFunction
   ) => {
     try {
-      const asset = await Asset.findOne({
-        where: { id: request.params.id }
-      });
+      const pId = request.params.id;
+      const asset = await dynamoDB.get(Object.assign(new Asset(), { id: pId }));
       response.send(asset);
     } catch (error) {
-      console.log(error);
-      sequelizeErrorMiddleware(error, request, response, next);
+      response.send(error);
     }
   };
 
@@ -56,30 +64,39 @@ class AssetController {
     next: NextFunction
   ) => {
     try {
-      await upload.single("photo")(request, response, async err => {
+      await upload.single("file")(request, response, async err => {
         if (err) response.send(err);
         else {
           const file: any = request.file;
-          const filename: string = file["original"].key.replace(
-            "-original",
-            ""
-          );
           try {
             const data = request.body;
-            const asset: IAsset = await Asset.create({
+            const toSave = Object.assign(new Asset(), {
               ...data,
-              filename
+              fileType: file.mimetype,
+              fileName: file.originalname,
+              sizes: {
+                xs: file.xs.Location,
+                sm: file.sm.Location,
+                md: file.md.Location,
+                lg: file.lg.Location,
+                original: file.original.Location
+              },
+              updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString()
             });
-            response.send(asset);
+            dynamoDB
+              .put(toSave)
+              .then(dataSaved => {
+                response.send(dataSaved);
+              })
+              .catch(error => response.send(error));
           } catch (error) {
-            console.log(error);
-            sequelizeErrorMiddleware(error, request, response, next);
+            response.send(error);
           }
         }
       });
     } catch (error) {
       response.send(error);
-      // sequelizeErrorMiddleware(error, request, response, next);
     }
   };
 }

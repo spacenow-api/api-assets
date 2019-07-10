@@ -1,5 +1,4 @@
-import { Asset } from './asset.model';
+import { Asset } from "./asset.model";
+import { AssetDTO } from "./assetDTO.model";
 
-export { Asset };
-
-export const arrayOfModels = [Asset];
+export { Asset as default, AssetDTO };

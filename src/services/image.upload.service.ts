@@ -6,7 +6,6 @@ import * as config from "../config";
 
 const AWS_S3_BUCKET_NAME = config.bucket || "";
 const s3 = new AWS.S3();
-const filename = `spacenow-${Date.now()}`;
 
 AWS.config.update({
   secretAccessKey: config.awsSecretAccessKey,
@@ -32,20 +31,14 @@ const imageFilter = (
 const options = {
   ACL: "public-read",
   s3,
-  Bucket: `${AWS_S3_BUCKET_NAME}`
+  Bucket: `${AWS_S3_BUCKET_NAME}/space-images`
 };
-
-const Resize = (
-  request: Request,
-  file: Express.Multer.File,
-  callback: (error: any, metadata?: any) => void
-): void => callback(null, Object.assign({}, { fieldname: file.fieldname }));
 
 const Key = (
   request: Request,
   file: any,
   callback: (error: any, metadata?: any) => void
-): void => callback(null, `${request.query.id}/${filename}`);
+): void => callback(null, `${request.params.folder}/spacenow-${Date.now()}`);
 
 const upload = multer({
   fileFilter: imageFilter,

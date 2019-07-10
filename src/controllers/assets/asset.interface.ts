@@ -2,7 +2,8 @@ interface IAsset {
   id: string;
   title: string;
   description: string;
-  filename: string;
+  fileName: string;
+  fileType: string;
   accessControl: string;
   isActive: boolean;
 }

@@ -1,4 +1,0 @@
-{
-  "migrations-dir": "./src/helpers/migrations",
-  "configFile": "./src/helpers/config/database.json"
-}

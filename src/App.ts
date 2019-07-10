@@ -2,10 +2,9 @@ import express, { Application } from "express";
 import cookieParse from "cookie-parser";
 import bodyParser from "body-parser";
 
+import dynamo from "./helpers/database/dynamo";
 import loggerMiddleware from "./helpers/middlewares/logger-middleware";
 import errorMiddleware from "./helpers/middlewares/error-middleware";
-import sequelizeMiddleware from "./helpers/middlewares/sequelize-middleware";
-import sequelize from "./helpers/database/sequelize";
 
 class App {
   public app: Application;
@@ -23,12 +22,11 @@ class App {
   }
 
   private initializeDatabase(): void {
-    sequelize.initialize();
+    dynamo();
   }
 
   private initializeMiddlewares(): void {
     this.app.use(loggerMiddleware);
-    this.app.use(sequelizeMiddleware);
     this.app.use(bodyParser.json());
     this.app.use(cookieParse());
   }
