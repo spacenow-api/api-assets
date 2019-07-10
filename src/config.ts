@@ -3,7 +3,7 @@ dotenv.config();
 
 export const DEBUG = process.env.DEBUG ? Boolean(process.env.DEBUG) : false;
 
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 6004;
+export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 6007;
 
 // S3 Bucket
 export const awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID;
