@@ -21,6 +21,6 @@ WORKDIR /app
 
 COPY --from=first-stage /app ./
 
-EXPOSE 6001
+EXPOSE 6007
 
 CMD ["yarn", "start"]

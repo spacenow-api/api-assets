@@ -27,7 +27,7 @@ fi
 set -eo pipefail
 # region=ap-southeast-2
 region=$1
-stack_name=$(echo "$2-SPACENOW-API-USERS-${4:-master}" | tr '[:lower:]' '[:upper:]')
+stack_name=$(echo "$2-SPACENOW-API-ASSETS-${4:-master}" | tr '[:lower:]' '[:upper:]')
 HostedZoneName=$(echo "$2.cloud.spacenow.com" | tr '[:upper:]' '[:lower:]')
 
 # get ssm parameters from env

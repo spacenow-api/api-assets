@@ -64,8 +64,8 @@ class AssetController {
     next: NextFunction
   ) => {
     try {
-      await upload.single("file")(request, response, async err => {
-        if (err) response.send(err);
+      await upload.single("file")(request, response, async error => {
+        if (error) response.send(error);
         else {
           const file: any = request.file;
           try {
@@ -91,11 +91,13 @@ class AssetController {
               })
               .catch(error => response.send(error));
           } catch (error) {
+            console.log(error);
             response.send(error);
           }
         }
       });
     } catch (error) {
+      console.log(error);
       response.send(error);
     }
   };

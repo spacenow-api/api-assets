@@ -74,6 +74,26 @@ Parameters:
     Description: "Task definition for this service"
     Type: String
     Default: ""
+  DbUser:
+    Description: "DB_USER"
+    Type: String
+    Default: ""
+    NoEcho: true
+  DbPassword:
+    Description: "DB_PASSWORD"
+    Type: String
+    Default: ""
+    NoEcho: true
+  DbHost:
+    Description: "DB_HOST"
+    Type: String
+    Default: ""
+    NoEcho: true
+  DbSchema:
+    Description: "DB_SCHEMA"
+    Type: String
+    Default: ""
+    NoEcho: true
   JwtSecret:
     Description: "JWT_SECRET"
     Type: String
@@ -204,6 +224,14 @@ Resources:
           PortMappings:
             - ContainerPort: !Ref ContainerPort
           Environment:
+            - Name: DATABASE_USERNAME
+              Value: !Ref DbUser
+            - Name: DATABASE_PASSWORD
+              Value: !Ref DbPassword
+            - Name: DATABASE_HOST
+              Value: !Ref DbHost
+            - Name: DATABASE_SCHEMA
+              Value: !Ref DbSchema
             - Name: JWT_SECRET
               Value: !Ref JwtSecret
             - Name: S3_BUCKET
