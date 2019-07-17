@@ -23,4 +23,4 @@ COPY --from=first-stage /app ./
 
 EXPOSE 6007
 
-CMD ["yarn", "start"]
+CMD ["yarn", "prod"]
