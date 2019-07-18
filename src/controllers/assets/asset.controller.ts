@@ -91,13 +91,13 @@ class AssetController {
               })
               .catch(error => response.send(error));
           } catch (error) {
-            console.log(error);
+            console.error(error);
             response.send(error);
           }
         }
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       response.send(error);
     }
   };
