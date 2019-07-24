@@ -1,6 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
-
-import uuidV4 from "uuid/v4";
+import axios from "axios";
+import FormData from "form-data";
+import fs from "fs";
+const _request = require("request");
 
 import authMiddleware from "../../helpers/middlewares/auth-middleware";
 import validationMiddleware from "../../helpers/middlewares/validation-middleware";
@@ -8,6 +10,7 @@ import IAsset from "./asset.interface";
 import Asset, { AssetDTO } from "../../models";
 import upload from "../../services/image.upload.service";
 import { dynamoDB } from "../../helpers/database/dynamo";
+import { ListingPhotos } from "../../models";
 
 class AssetController {
   public path = "/assets";
@@ -20,11 +23,8 @@ class AssetController {
   private intializeRoutes() {
     this.router.get(this.path, this.getAssets);
     this.router.get(`${this.path}/:id`, this.getAsset);
-    this.router.post(
-      `${this.path}/:folder`,
-      // validationMiddleware(AssetDTO),
-      this.createAsset
-    );
+    this.router.post(`${this.path}/:folder`, this.createAsset);
+    this.router.get(`${this.path}/images/resize`, this.resizeAsset);
     this.router.patch(this.path, this.createAsset);
   }
 
@@ -56,6 +56,41 @@ class AssetController {
     } catch (error) {
       response.send(error);
     }
+  };
+
+  private resizeAsset = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const photos: any = await ListingPhotos.findAll({
+      where: {
+        listingId: 29
+      }
+    });
+
+    return photos.map(
+      async (photo: { listingId: number; name: string; type: string }) => {
+        try {
+          const form = new FormData();
+          const stream = fs.createReadStream(photo.name);
+          const formHeaders = form.getHeaders();
+          form.append("file", stream);
+          await axios.post(
+            `http://0.0.0.0:6007/assets/${photo.listingId}`,
+            form,
+            {
+              headers: {
+                ...formHeaders
+              }
+            }
+          );
+        } catch (error) {
+          console.error(error);
+          response.send(error);
+        }
+      }
+    );
   };
 
   private createAsset = async (

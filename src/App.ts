@@ -3,6 +3,8 @@ import cookieParse from "cookie-parser";
 import bodyParser from "body-parser";
 
 import dynamo from "./helpers/database/dynamo";
+import sequelize from "./helpers/database/sequelize";
+import sequelizeMiddleware from "./helpers/middlewares/sequelize-middleware";
 import loggerMiddleware from "./helpers/middlewares/logger-middleware";
 import errorMiddleware from "./helpers/middlewares/error-middleware";
 
@@ -23,9 +25,11 @@ class App {
 
   private initializeDatabase(): void {
     dynamo();
+    sequelize.initialize();
   }
 
   private initializeMiddlewares(): void {
+    this.app.use(sequelizeMiddleware);
     this.app.use(loggerMiddleware);
     this.app.use(bodyParser.json());
     this.app.use(cookieParse());
