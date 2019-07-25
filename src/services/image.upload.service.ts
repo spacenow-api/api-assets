@@ -53,7 +53,7 @@ const upload = multer({
       { suffix: "xs", width: 100 },
       { suffix: "original" }
     ],
-    toFormat: "jpeg"
+    toFormat: "png"
   })
 });
 

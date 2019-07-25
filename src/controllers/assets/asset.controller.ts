@@ -1,16 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import axios from "axios";
 import FormData from "form-data";
-import fs from "fs";
-const _request = require("request");
-
-import authMiddleware from "../../helpers/middlewares/auth-middleware";
-import validationMiddleware from "../../helpers/middlewares/validation-middleware";
-import IAsset from "./asset.interface";
-import Asset, { AssetDTO } from "../../models";
+import Asset from "../../models";
 import upload from "../../services/image.upload.service";
+import download from "../../services/image.download.service";
 import { dynamoDB } from "../../helpers/database/dynamo";
 import { ListingPhotos } from "../../models";
+import fs from "fs";
 
 class AssetController {
   public path = "/assets";
@@ -65,32 +61,38 @@ class AssetController {
   ) => {
     const photos: any = await ListingPhotos.findAll({
       where: {
-        listingId: 29
+        listingId: 28
       }
     });
 
-    return photos.map(
-      async (photo: { listingId: number; name: string; type: string }) => {
-        try {
-          const form = new FormData();
-          const stream = fs.createReadStream(photo.name);
-          const formHeaders = form.getHeaders();
-          form.append("file", stream);
-          await axios.post(
-            `http://0.0.0.0:6007/assets/${photo.listingId}`,
-            form,
-            {
-              headers: {
-                ...formHeaders
+    // return photos.map(async (photo: { name: string; listingId: number }) => {
+    try {
+      download(
+        "https://sandpit-spacenow-images.s3.ap-southeast-2.amazonaws.com/upload/eb4bdd32ca4bc8f2f0a82d1ad8084618.png",
+        34,
+        "image/png",
+        () => {
+          fs.readFile("34.png", async (error, data) => {
+            const form = new FormData();
+            const getHeaders = form.getHeaders();
+            form.append("file", data);
+            await axios.post(
+              `http://0.0.0.0:6007/assets/34`, //`http://0.0.0.0:6007/assets/${photo.listingId}`,
+              form,
+              {
+                headers: {
+                  ...getHeaders
+                }
               }
-            }
-          );
-        } catch (error) {
-          console.error(error);
-          response.send(error);
+            );
+          });
         }
-      }
-    );
+      );
+    } catch (error) {
+      console.error(error);
+      response.send(error);
+    }
+    // });
   };
 
   private createAsset = async (
