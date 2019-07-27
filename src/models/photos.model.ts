@@ -1,35 +1,59 @@
-import { Table, Column, Model, PrimaryKey } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	AutoIncrement,
+	Model,
+	CreatedAt,
+	UpdatedAt,
+	PrimaryKey,
+	AllowNull,
+	Default,
+} from 'sequelize-typescript';
 
-@Table
+@Table({
+	tableName: 'ListingPhotos',
+})
 export class ListingPhotos extends Model<ListingPhotos> {
-  @PrimaryKey
-  @Column
-  public id!: string;
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	id!: number;
 
-  @Column
-  public listingId!: string;
+	@AllowNull(false)
+	@Column
+	listingId!: number;
 
-  @Column
-  public name!: string;
+	@AllowNull(false)
+	@Column
+	name!: string;
 
-  @Column
-  public isCover!: boolean;
+	@Default(0)
+	@Column
+	isCover?: number;
 
-  @Column
-  public bucket!: string;
+	@AllowNull(false)
+	@Column
+	bucket!: string;
 
-  @Column
-  public region!: string;
+	@AllowNull(false)
+	@Column
+	region!: string;
 
-  @Column
-  public key!: string;
+	@AllowNull(false)
+	@Column
+	key!: string;
 
-  @Column
-  public type!: string;
+	@AllowNull(false)
+	@Column
+	type!: string;
 
-  @Column
-  public createdAt!: Date;
+	@CreatedAt
+	@AllowNull(false)
+	@Column
+	createdAt!: Date;
 
-  @Column
-  public updatedAt!: Date;
+	@UpdatedAt
+	@AllowNull(false)
+	@Column
+	updatedAt!: Date;
 }

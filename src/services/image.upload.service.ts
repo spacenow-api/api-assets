@@ -38,22 +38,23 @@ const Key = (
 	request: Request,
 	file: any,
 	callback: (error: any, metadata?: any) => void,
-): void => callback(null, `${request.params.folder}/spacenow-${Date.now()}`);
+): void =>
+	callback(null, `${request.params.listingId}/spacenow-${Date.now()}.jpeg`);
 
 const upload = multer({
 	fileFilter: imageFilter,
 	storage: s3Storage({
 		...options,
 		Key,
-		multiple: true,
-		resize: [
-			{ suffix: 'lg', width: 1170 },
-			{ suffix: 'md', width: 800 },
-			{ suffix: 'sm', width: 400 },
-			{ suffix: 'xs', width: 100 },
-			{ suffix: 'original' },
-		],
-		toFormat: 'png',
+		toFormat: 'jpeg',
+		// multiple: true,
+		// resize: [
+		// 	{ suffix: 'lg', width: 1170 },
+		// 	{ suffix: 'md', width: 800 },
+		// 	{ suffix: 'sm', width: 400 },
+		// 	{ suffix: 'xs', width: 100 },
+		// 	{ suffix: 'original' },
+		// ],
 	}),
 });
 
