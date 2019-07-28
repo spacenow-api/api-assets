@@ -20,6 +20,10 @@ class LegacyPhotosController {
 			`${this.path}/:listingId/:photoId`,
 			this.deleteListingPhoto,
 		);
+		this.router.put(
+			`${this.path}/:listingId/:photoId`,
+			this.setListingPhotoCover,
+		);
 		this.router.post(`${this.path}/upload/:listingId`, this.uploadListingPhoto);
 	}
 
@@ -48,6 +52,26 @@ class LegacyPhotosController {
 			const data = request.body;
 			const photo: any = await ListingPhotos.create(data);
 			response.send(photo);
+		} catch (error) {
+			sequelizeErrorMiddleware(error, request, response, next);
+		}
+	};
+
+	private setListingPhotoCover = async (
+		request: Request,
+		response: Response,
+		next: NextFunction,
+	) => {
+		try {
+			await ListingPhotos.update(
+				{ isCover: 0 },
+				{ where: { listingId: request.params.listingId } },
+			);
+			await ListingPhotos.update(
+				{ isCover: 1 },
+				{ where: { id: request.params.photoId } },
+			);
+			response.status(200).send('Cover Photo Updated');
 		} catch (error) {
 			sequelizeErrorMiddleware(error, request, response, next);
 		}
