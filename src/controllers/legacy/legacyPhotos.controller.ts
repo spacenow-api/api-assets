@@ -82,7 +82,7 @@ class LegacyPhotosController {
 			if (!listingObj) throw new HttpException(400, 'A Listing must exist.');
 			await upload.single('file')(request, response, async error => {
 				if (error) {
-					console.error(error);
+					console.error('ERROR', error);
 					response.send(error);
 				} else {
 					const file: any = request.file;

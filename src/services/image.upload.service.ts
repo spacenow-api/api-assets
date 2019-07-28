@@ -10,6 +10,7 @@ const s3 = new AWS.S3();
 AWS.config.update({
 	secretAccessKey: config.awsSecretAccessKey,
 	accessKeyId: config.awsAccessKeyId,
+	sessionToken: config.awsSessionToken,
 	region: 'ap-southeast-2',
 });
 
@@ -47,14 +48,6 @@ const upload = multer({
 		...options,
 		Key,
 		toFormat: 'jpeg',
-		// multiple: true,
-		// resize: [
-		// 	{ suffix: 'lg', width: 1170 },
-		// 	{ suffix: 'md', width: 800 },
-		// 	{ suffix: 'sm', width: 400 },
-		// 	{ suffix: 'xs', width: 100 },
-		// 	{ suffix: 'original' },
-		// ],
 	}),
 });
 
