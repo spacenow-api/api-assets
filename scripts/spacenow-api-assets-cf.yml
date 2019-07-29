@@ -11,7 +11,7 @@ Parameters:
     Description: The name of the curent git brnach.
   ServiceName:
     Type: String
-    Default: api-assets-2
+    Default: api-assets
     Description: A name for the service
   ImageUrl:
     Type: String
