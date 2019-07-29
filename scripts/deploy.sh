@@ -43,7 +43,7 @@ USERS_API_HOST=$(get_ssm_parameter /$2/SPACENOW/USERS_API_HOST)
 ACM_CERTIFICATE=$(get_ssm_parameter /$2/ACM_CERTIFICATE)
 echo "ENV ${2}"
 CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
-          ParameterKey=ContainerPort,ParameterValue=6001 \
+          ParameterKey=ContainerPort,ParameterValue=6007 \
           ParameterKey=StackName,ParameterValue=$2 \
           ParameterKey=SliceName,ParameterValue=$4 \
           ParameterKey=DbUser,ParameterValue=$DB_USERNAME \
