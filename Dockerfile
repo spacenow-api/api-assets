@@ -13,6 +13,8 @@ RUN apk add --no-cache --virtual .gyp \
   make \
   g++
 
+RUN export PATH="$(yarn global bin):$PATH"
+
 RUN apk add vips-dev fftw-dev build-base --update-cache \
   --repository https://alpine.global.ssl.fastly.net/alpine/edge/community \
   --repository https://alpine.global.ssl.fastly.net/alpine/edge/main
