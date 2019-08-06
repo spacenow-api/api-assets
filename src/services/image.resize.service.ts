@@ -1,14 +1,21 @@
 import sharp from "sharp";
-import request from "request";
+import axios from "axios";
+import memoryCache from "memory-cache";
 
-const resize = (
+const resize = async (
+  key: string,
   path: string,
   format: string,
   width?: number,
   height?: number
 ) => {
-  const readStream = request(path);
-  let transform = sharp();
+  const fileResponse = await axios({
+    url: path,
+    method: "GET",
+    responseType: "arraybuffer"
+  });
+  const buffer = Buffer.from(fileResponse.data, "base64");
+  let transform = sharp(buffer);
 
   if (format) {
     transform = transform.toFormat(format);
@@ -18,7 +25,10 @@ const resize = (
     transform = transform.resize(width, height);
   }
 
-  return readStream.pipe(transform);
+  const resizedBuffer = await transform.toBuffer();
+  memoryCache.put(key, resizedBuffer, 24 * 3.6e6); // Expire in 24 hours.
+
+  return resizedBuffer;
 };
 
 export default resize;

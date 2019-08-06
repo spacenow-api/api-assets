@@ -1,14 +1,17 @@
 import { Router, Request, Response, NextFunction } from "express";
+import sharp from "sharp";
+import axios from "axios";
+import memoryCache from "memory-cache";
+
 import errorMiddleware from "../../helpers/middlewares/error-middleware";
-import HttpException from "../../helpers/exceptions/HttpException";
 import Asset from "../../models";
 import { dynamoDB } from "../../helpers/database/dynamo";
 import upload from "../../services/image.upload.service";
-import deleteAsset from "../../services/image.delete.service";
 import resize from "../../services/image.resize.service";
 
 class AssetController {
   public path = "/assets";
+
   private router: Router = Router();
 
   constructor() {
@@ -28,31 +31,45 @@ class AssetController {
     response: Response,
     next: NextFunction
   ) => {
-    try {
-      const widthString = request.query.width;
-      const maxW = 2048;
-      const maxH = 2048;
-      const heightString = request.query.height;
-      const format = request.query.format;
-      const path = request.query.path;
+    const key = "__asset__" + request.originalUrl || request.url;
+    const cacheData = memoryCache.get(key);
+    if (cacheData) {
+      response.writeHead(200, {
+        "Content-Type": `image/${request.query.format || "png"}`,
+        "Content-Length": cacheData.length
+      });
+      response.end(cacheData);
+    } else {
+      try {
+        const widthString = request.query.width;
+        const maxW = 2048;
+        const maxH = 2048;
+        const heightString = request.query.height;
+        const format = request.query.format;
+        const path = request.query.path;
 
-      let width, height;
+        let width, height;
+        widthString
+          ? (width =
+              parseInt(widthString) > maxW ? maxW : parseInt(widthString))
+          : (width = width);
+        heightString
+          ? (height = parseInt(heightString)) > maxH
+            ? maxH
+            : parseInt(heightString)
+          : (height = height);
 
-      widthString
-        ? (width = parseInt(widthString) > maxW ? maxW : parseInt(widthString))
-        : (width = width);
-      heightString
-        ? (height = parseInt(heightString)) > maxH
-          ? maxH
-          : parseInt(heightString)
-        : (height = height);
+        const resizedBuffer = await resize(key, path, format, width, height);
 
-      response.type(`image/${format || "png"}`);
-
-      resize(path, format, width, height).pipe(response);
-    } catch (error) {
-      console.log(error);
-      errorMiddleware(error, request, response, next);
+        response.writeHead(200, {
+          "Content-Type": `image/${format || "png"}`,
+          "Content-Length": resizedBuffer.length
+        });
+        response.end(resizedBuffer);
+      } catch (error) {
+        console.log(error);
+        errorMiddleware(error, request, response, next);
+      }
     }
   };
 
