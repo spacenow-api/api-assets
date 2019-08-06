@@ -30,14 +30,22 @@ class AssetController {
   ) => {
     try {
       const widthString = request.query.width;
+      const maxW = 2048;
+      const maxH = 2048;
       const heightString = request.query.height;
       const format = request.query.format;
       const path = request.query.path;
 
       let width, height;
 
-      widthString ? (width = parseInt(widthString)) : (width = width);
-      heightString ? (height = parseInt(heightString)) : (height = height);
+      widthString
+        ? (width = parseInt(widthString) > maxW ? maxW : parseInt(widthString))
+        : (width = width);
+      heightString
+        ? (height = parseInt(heightString)) > maxH
+          ? maxH
+          : parseInt(heightString)
+        : (height = height);
 
       response.type(`image/${format || "png"}`);
 
