@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import request from "request";
+// import request from "request";
 
 const resize = (
   path: string,
@@ -7,18 +7,19 @@ const resize = (
   width?: number,
   height?: number
 ) => {
-  const readStream = request(path);
-  let transform = sharp();
+  // const readStream = request(path);
+  // let transform = sharp();
 
-  if (format) {
-    transform = transform.toFormat(format);
-  }
+  // if (format) {
+  //   transform = transform.toFormat(format);
+  // }
 
-  if (width || height) {
-    transform = transform.resize(width, height);
-  }
+  // if (width || height) {
+  //   transform = transform.resize(width, height);
+  // }
 
-  return readStream.pipe(transform);
+  // return readStream.pipe(transform);
+  return;
 };
 
 export default resize;
