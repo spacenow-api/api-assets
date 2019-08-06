@@ -1,14 +1,17 @@
 import { Router, Request, Response, NextFunction } from "express";
+import sharp from "sharp";
+import axios from 'axios';
+import memoryCache from "memory-cache";
+
 import errorMiddleware from "../../helpers/middlewares/error-middleware";
-import HttpException from "../../helpers/exceptions/HttpException";
 import Asset from "../../models";
 import { dynamoDB } from "../../helpers/database/dynamo";
 import upload from "../../services/image.upload.service";
-import deleteAsset from "../../services/image.delete.service";
-import resize from "../../services/image.resize.service";
 
 class AssetController {
+
   public path = "/assets";
+
   private router: Router = Router();
 
   constructor() {
@@ -23,28 +26,39 @@ class AssetController {
     this.router.get(`/`, this.resizeAsset);
   }
 
-  private resizeAsset = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const widthString = request.query.width;
-      const heightString = request.query.height;
-      const format = request.query.format;
-      const path = request.query.path;
+  private resizeAsset = async (req: Request, res: Response, next: NextFunction) => {
+    const key = "__asset__" + req.originalUrl || req.url;
+    const cacheData = memoryCache.get(key);
+    if (cacheData) {
+      res.writeHead(200, { 'Content-Type': `image/${req.query.format || "png"}`, 'Content-Length': cacheData.length });
+      res.end(cacheData);
+    } else {
+      try {
+        const path = req.query.path;
+        const format = req.query.format;
+        const widthString = req.query.width;
+        const heightString = req.query.height;
 
-      let width, height;
+        let width, height;
+        widthString ? (width = parseInt(widthString)) : (width = width);
+        heightString ? (height = parseInt(heightString)) : (height = height);
 
-      widthString ? (width = parseInt(widthString)) : (width = width);
-      heightString ? (height = parseInt(heightString)) : (height = height);
+        const fileResponse = await axios({ url: path, method: 'GET', responseType: 'arraybuffer' })
+        const buffer = Buffer.from(fileResponse.data, 'base64')
 
-      response.type(`image/${format || "png"}`);
+        let transform = sharp(buffer);
+        if (format) transform = transform.toFormat(format);
+        if (width || height) transform = transform.resize(width, height);
 
-      resize(path, format, width, height).pipe(response);
-    } catch (error) {
-      console.log(error);
-      errorMiddleware(error, request, response, next);
+        const resizedBuffer = await transform.toBuffer();
+        memoryCache.put(key, resizedBuffer, 24 * 3.6e6); // Expire in 24 hours.
+
+        res.writeHead(200, { 'Content-Type': `image/${format || "png"}`, 'Content-Length': resizedBuffer.length });
+        res.end(resizedBuffer);
+      } catch (error) {
+        console.log(error);
+        errorMiddleware(error, req, res, next);
+      }
     }
   };
 
