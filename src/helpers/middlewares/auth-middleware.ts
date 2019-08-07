@@ -13,7 +13,7 @@ import * as config from "./../../config";
 
 const fetchUserById = async (id: string): Promise<string> => {
   const res = await axios.get(
-    `${config.USERS_AUTHENTICATION_API_HOST}/users/legancy/${id}`
+    `${config.USERS_AUTHENTICATION_API_HOST}/users/legacy/${id}`
   );
   if (res && res.data) {
     const userData: IUser = res.data;
