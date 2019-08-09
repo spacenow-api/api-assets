@@ -104,6 +104,11 @@ Parameters:
     Type: String
     Default: ""
     NoEcho: true
+  SmtpLoginPassword:
+    Description: "SMTP_LOGIN_PASSWORD"
+    Type: String
+    Default: ''
+    NoEcho: true
   UsersApiHost:
     Description: "USERS_API_HOST"
     Type: String
@@ -245,6 +250,8 @@ Resources:
               Value: !Ref S3Bucket
             - Name: USERS_API_HOST
               Value: !Ref UsersApiHost
+            - Name: SMTP_LOGIN_PASSWORD
+              Value: !Ref SmtpLoginPassword
 
           LogConfiguration:
             LogDriver: awslogs

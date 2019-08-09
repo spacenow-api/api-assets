@@ -52,6 +52,7 @@ CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
           ParameterKey=DbSchema,ParameterValue=$DB_SCHEMA \
           ParameterKey=JwtSecret,ParameterValue=$JWT_SECRET \
           ParameterKey=S3Bucket,ParameterValue=$S3_BUCKET \
+          ParameterKey=SmtpLoginPassword,ParameterValue=$SMTP_LOGIN_PASSWORD \
           ParameterKey=UsersApiHost,ParameterValue=$USERS_API_HOST \
           ParameterKey=Certificate,ParameterValue=$ACM_CERTIFICATE \
           ParameterKey=HostedZoneName,ParameterValue=$HostedZoneName"
