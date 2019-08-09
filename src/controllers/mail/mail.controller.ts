@@ -22,7 +22,6 @@ class MailController {
     let transporter;
     try {
       const data = <IMailRequest>req.body;
-      // TODO: Need to define host, user and pass for real environment...
       let host = emailConfig.host;
       let port = emailConfig.port;
       let from = emailConfig.email;
