@@ -54,7 +54,7 @@ class MailController {
       console.info('Message sent: %s', info.messageId);
       if (DEBUG)
         console.warn('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-      res.end();
+      res.send({ messageId: info.messageId });
     } catch (err) {
       console.error(err);
       errorMiddleware(err, req, res, next);
