@@ -110,7 +110,7 @@ Parameters:
     Default: ''
     NoEcho: true
   UsersApiHost:
-    Description: "USERS_AUTHENTICATION_API_HOST"
+    Description: "USERS_API_HOST"
     Type: String
     Default: ""
     NoEcho: true
@@ -248,7 +248,7 @@ Resources:
               Value: !Ref JwtSecret
             - Name: S3_BUCKET
               Value: !Ref S3Bucket
-            - Name: USERS_AUTHENTICATION_API_HOST
+            - Name: USERS_API_HOST
               Value: !Ref UsersApiHost
             - Name: SMTP_LOGIN_PASSWORD
               Value: !Ref SmtpLoginPassword

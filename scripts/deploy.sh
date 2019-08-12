@@ -40,7 +40,7 @@ DB_SCHEMA=$(get_ssm_parameter /$2/SPACENOW/DATABASE_SCHEMA)
 JWT_SECRET=$(get_ssm_parameter /$2/SPACENOW/JWT_SECRET)
 S3_BUCKET=$(get_ssm_parameter /$2/SPACENOW/S3_BUCKET)
 SMTP_LOGIN_PASSWORD=$(get_ssm_parameter /$2/SPACENOW/SMTP_LOGIN_PASSWORD)
-USERS_AUTHENTICATION_API_HOST=$(get_ssm_parameter /$2/SPACENOW/USERS_AUTHENTICATION_API_HOST)
+USERS_API_HOST=$(get_ssm_parameter /$2/SPACENOW/USERS_API_HOST)
 ACM_CERTIFICATE=$(get_ssm_parameter /$2/SPACENOW/ACM_CERTIFICATE)
 echo "ENV ${2}"
 CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
@@ -54,7 +54,7 @@ CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
           ParameterKey=JwtSecret,ParameterValue=$JWT_SECRET \
           ParameterKey=S3Bucket,ParameterValue=$S3_BUCKET \
           ParameterKey=SmtpLoginPassword,ParameterValue=$SMTP_LOGIN_PASSWORD \
-          ParameterKey=UsersApiHost,ParameterValue=$USERS_AUTHENTICATION_API_HOST \
+          ParameterKey=UsersApiHost,ParameterValue=$USERS_API_HOST \
           ParameterKey=Certificate,ParameterValue=$ACM_CERTIFICATE \
           ParameterKey=HostedZoneName,ParameterValue=$HostedZoneName"
 echo "Checking if stack exists ..."
