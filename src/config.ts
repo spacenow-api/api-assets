@@ -3,7 +3,7 @@ dotenv.config();
 
 export const DEBUG = process.env.DEBUG ? /true/i.test(process.env.DEBUG) : false;
 
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 6007;
+export const PORT = 6007;
 
 // S3 Bucket
 export const bucket = process.env.S3_BUCKET;
