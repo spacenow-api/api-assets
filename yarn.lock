@@ -158,9 +158,10 @@
   version "12.0.12"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.12.tgz#cc791b402360db1eaf7176479072f91ee6c6c7ca"
 
-"@types/nodemailer@^6.2.1":
+"@types/nodemailer@~6.2.1":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.2.1.tgz#8f089bf0ef826f04b9d8dd8750233b04978cb675"
+  integrity sha512-6f46rxxaFwyOW39psPoQiM7jHjL7apDRNT5WPHIuv+TZFv+7sBGSI9J7blIC3/NWff4O9/VSzgoQtO6aPLUdvQ==
   dependencies:
     "@types/node" "*"
 
@@ -1206,9 +1207,10 @@ node-notifier@^5.4.0:
     shellwords "^0.1.1"
     which "^1.3.0"
 
-nodemailer@^6.3.0:
+nodemailer@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.3.0.tgz#a89b0c62d3937bdcdeecbf55687bd7911b627e12"
+  integrity sha512-TEHBNBPHv7Ie/0o3HXnb7xrPSSQmH1dXwQKRaMKDBGt/ZN54lvDVujP6hKkO/vjkIYL9rK8kHSG11+G42Nhxuw==
 
 noop-logger@^0.1.1:
   version "0.1.1"
