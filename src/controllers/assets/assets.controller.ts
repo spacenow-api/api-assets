@@ -67,7 +67,7 @@ class AssetController {
         });
         response.end(resizedBuffer);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         errorMiddleware(error, request, response, next);
       }
     }
