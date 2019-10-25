@@ -107,7 +107,7 @@ class LegacyPhotosController {
 			await upload.single('file')(request, response, async error => {
 				if (error) {
 					console.error('ERROR', error);
-					response.send(error);
+					response.status(400).send(error);
 				} else {
 					const file: any = request.file;
 					try {
@@ -126,13 +126,13 @@ class LegacyPhotosController {
 						response.send(photo);
 					} catch (error) {
 						console.error(error);
-						response.send(error);
+						response.status(400).send(error);
 					}
 				}
 			});
 		} catch (error) {
 			console.error(error);
-			response.send(error);
+			response.status(400).send(error);
 		}
 	};
 }
