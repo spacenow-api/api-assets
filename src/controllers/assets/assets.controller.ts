@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
-import memoryCache from "memory-cache";
 
 import errorMiddleware from "../../helpers/middlewares/error-middleware";
 import { dynamoDB } from "../../helpers/database/dynamo";
+import { getInstance } from './../../helpers/database/redis';
 
 import { uploadByMulter } from "../../services/image.upload.service";
 import resize from "../../services/image.resize.service";
@@ -11,9 +11,15 @@ import Asset from "../../models";
 
 class AssetController {
 
+  private MAX_W = 2048;
+
+  private MAX_H = 2048;
+
   public path = "/assets";
 
   private router: Router = Router();
+
+  private redis = getInstance();
 
   constructor() {
     this.intializeRoutes();
@@ -29,27 +35,27 @@ class AssetController {
 
   private resizeAsset = async (request: Request, response: Response, next: NextFunction) => {
     const key = "__asset__" + request.originalUrl || request.url;
-    const cacheData = memoryCache.get(key);
+    const cacheData = await this.redis.get(key);
     if (cacheData) {
-      response.writeHead(200, { "Content-Type": `image/jpeg`, "Content-Length": cacheData.length });
-      response.end(cacheData);
+      const resizedBuffer = Buffer.from(cacheData, "base64");
+      response.writeHead(200, { "Content-Type": `image/jpeg`, "Content-Length": resizedBuffer.length });
+      response.end(resizedBuffer);
     } else {
-      const maxW = 2048;
-      const maxH = 2048;
       try {
         const { path, width, height } = request.query;
 
         let widthInt, heightInt;
-        width ? (widthInt = parseInt(width) > maxW ? maxW : parseInt(width)) : (widthInt = widthInt);
-        height ? (heightInt = parseInt(height)) > maxH ? maxH : parseInt(height) : (heightInt = heightInt);
+        width ? (widthInt = parseInt(width)) > this.MAX_W ? this.MAX_W : parseInt(width) : (widthInt = widthInt);
+        height ? (heightInt = parseInt(height)) > this.MAX_H ? this.MAX_H : parseInt(height) : (heightInt = heightInt);
 
-        const resizedBuffer = await resize(key, path, 'jpeg', width, height);
+        const resizedBuffer = await resize(path, widthInt, heightInt);
+        await this.redis.set(key, resizedBuffer.toString('base64'));
 
         response.writeHead(200, { "Content-Type": `image/jpeg`, "Content-Length": resizedBuffer.length });
         response.end(resizedBuffer);
-      } catch (error) {
-        console.error(error);
-        errorMiddleware(error, request, response, next);
+      } catch (err) {
+        console.error(err);
+        errorMiddleware(err, request, response, next);
       }
     }
   };
