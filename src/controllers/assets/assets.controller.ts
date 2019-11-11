@@ -10,6 +10,7 @@ import resize from "../../services/image.resize.service";
 import Asset from "../../models";
 
 class AssetController {
+
   public path = "/assets";
 
   private router: Router = Router();
@@ -19,52 +20,32 @@ class AssetController {
   }
 
   private intializeRoutes() {
+    this.router.get(`/`, this.resizeAsset);
     this.router.get(`${this.path}`, this.getAssets);
     this.router.get(`${this.path}/:assetId`, this.getAsset);
     this.router.post(`${this.path}`, this.createAsset);
     this.router.delete(`${this.path}/:assetId`, this.deleteAsset);
-    this.router.get(`/`, this.resizeAsset);
   }
 
-  private resizeAsset = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  private resizeAsset = async (request: Request, response: Response, next: NextFunction) => {
     const key = "__asset__" + request.originalUrl || request.url;
     const cacheData = memoryCache.get(key);
     if (cacheData) {
-      response.writeHead(200, {
-        "Content-Type": `image/${request.query.format || "png"}`,
-        "Content-Length": cacheData.length
-      });
+      response.writeHead(200, { "Content-Type": `image/jpeg`, "Content-Length": cacheData.length });
       response.end(cacheData);
     } else {
+      const maxW = 2048;
+      const maxH = 2048;
       try {
-        const widthString = request.query.width;
-        const maxW = 2048;
-        const maxH = 2048;
-        const heightString = request.query.height;
-        const format = request.query.format;
-        const path = request.query.path;
+        const { path, width, height } = request.query;
 
-        let width, height;
-        widthString
-          ? (width =
-            parseInt(widthString) > maxW ? maxW : parseInt(widthString))
-          : (width = width);
-        heightString
-          ? (height = parseInt(heightString)) > maxH
-            ? maxH
-            : parseInt(heightString)
-          : (height = height);
+        let widthInt, heightInt;
+        width ? (widthInt = parseInt(width) > maxW ? maxW : parseInt(width)) : (widthInt = widthInt);
+        height ? (heightInt = parseInt(height)) > maxH ? maxH : parseInt(height) : (heightInt = heightInt);
 
-        const resizedBuffer = await resize(key, path, format, width, height);
+        const resizedBuffer = await resize(key, path, 'jpeg', width, height);
 
-        response.writeHead(200, {
-          "Content-Type": `image/${format || "png"}`,
-          "Content-Length": resizedBuffer.length
-        });
+        response.writeHead(200, { "Content-Type": `image/jpeg`, "Content-Length": resizedBuffer.length });
         response.end(resizedBuffer);
       } catch (error) {
         console.error(error);
@@ -73,11 +54,7 @@ class AssetController {
     }
   };
 
-  private getAssets = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  private getAssets = async (request: Request, response: Response, next: NextFunction) => {
     try {
       const assets: Array<Asset> = new Array();
       for await (const item of dynamoDB.scan(Asset)) {
@@ -90,11 +67,7 @@ class AssetController {
     }
   };
 
-  private getAsset = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  private getAsset = async (request: Request, response: Response, next: NextFunction) => {
     try {
       const aId = request.params.id;
       const asset: Asset = await dynamoDB.get(
@@ -106,11 +79,7 @@ class AssetController {
     }
   };
 
-  private createAsset = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  private createAsset = async (request: Request, response: Response, next: NextFunction) => {
     try {
       await uploadByMulter.single("file")(request, response, async error => {
         if (error) {
@@ -152,13 +121,9 @@ class AssetController {
     }
   };
 
-  private deleteAsset = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  private deleteAsset = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      console.log("chamou");
+      response.end();
     } catch (error) {
       errorMiddleware(error, request, response, next);
     }
