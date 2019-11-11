@@ -1,13 +1,13 @@
 import { Router, Request, Response, NextFunction } from "express";
-import sharp from "sharp";
-import axios from "axios";
 import memoryCache from "memory-cache";
 
 import errorMiddleware from "../../helpers/middlewares/error-middleware";
-import Asset from "../../models";
 import { dynamoDB } from "../../helpers/database/dynamo";
-import upload from "../../services/image.upload.service";
+
+import { uploadByMulter } from "../../services/image.upload.service";
 import resize from "../../services/image.resize.service";
+
+import Asset from "../../models";
 
 class AssetController {
   public path = "/assets";
@@ -51,7 +51,7 @@ class AssetController {
         let width, height;
         widthString
           ? (width =
-              parseInt(widthString) > maxW ? maxW : parseInt(widthString))
+            parseInt(widthString) > maxW ? maxW : parseInt(widthString))
           : (width = width);
         heightString
           ? (height = parseInt(heightString)) > maxH
@@ -112,7 +112,7 @@ class AssetController {
     next: NextFunction
   ) => {
     try {
-      await upload.single("file")(request, response, async error => {
+      await uploadByMulter.single("file")(request, response, async error => {
         if (error) {
           console.error(error);
           response.send(error);
