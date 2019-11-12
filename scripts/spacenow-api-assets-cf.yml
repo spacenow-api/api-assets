@@ -152,7 +152,6 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
-        - 'arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess'
 
   ExecutionRole:
     Type: AWS::IAM::Role
@@ -167,7 +166,6 @@ Resources:
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
         - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
-        - 'arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess'
       Policies:
         - PolicyName: 'S3Access'
           PolicyDocument:
@@ -187,15 +185,6 @@ Resources:
                   - 's3:DeleteObject'
                 Resource:
                   - 'arn:aws:s3:::*spacenow-api-assets/*'
-        - PolicyName: 'RedisAccess'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: 'Allow'
-                Action:
-                  - 'elasticache:*'
-                Resource:
-                  - '*'
 
   LogGroup:
     Type: AWS::Logs::LogGroup
@@ -218,6 +207,13 @@ Resources:
           FromPort: !Ref ContainerPort
           ToPort: !Ref ContainerPort
           SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+
+  ElasticacheSecurityGroupd:
+    Type: AWS::ElastiCache::SecurityGroupIngress
+    Properties:
+      CacheSecurityGroupName: sg-0dbf2b9d996f4c91e
+      EC2SecurityGroupName: ContainerSecurityGroup
+
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -328,7 +324,6 @@ Resources:
       TargetType: ip
       VpcId:
         Fn::ImportValue: !Join ['-', [!Ref 'StackName', 'VPC-id']]
-
   ListenerHTTP:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -372,7 +367,6 @@ Resources:
             !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-publicdmz-b-id']]
         - Fn::ImportValue:
             !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-publicdmz-c-id']]
-
   DNSRecord:
     Type: AWS::Route53::RecordSet
     Condition: isMaster
