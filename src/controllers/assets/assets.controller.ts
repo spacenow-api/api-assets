@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
+import memoryCache from 'memory-cache'
 
 import errorMiddleware from "../../helpers/middlewares/error-middleware";
 import { dynamoDB } from "../../helpers/database/dynamo";
-import { getInstance } from './../../helpers/database/redis';
 
 import { uploadByMulter } from "../../services/image.upload.service";
 import resize from "../../services/image.resize.service";
@@ -21,7 +21,7 @@ class AssetController {
 
   private router: Router = Router();
 
-  private redis = getInstance();
+  private mCache = new memoryCache.Cache();
 
   constructor() {
     this.intializeRoutes();
@@ -37,11 +37,10 @@ class AssetController {
 
   private resizeAsset = async (request: Request, response: Response, next: NextFunction) => {
     const key = "__asset__" + request.originalUrl || request.url;
-    const cacheData = await this.redis.getBuffer(key);
+    const cacheData: any = this.mCache.get(key);
     if (cacheData) {
-      const resizedBuffer = cacheData;
-      response.writeHead(200, { "Content-Type": this.IMAGE_TYPE, "Content-Length": resizedBuffer.length });
-      response.end(resizedBuffer);
+      response.writeHead(200, { "Content-Type": this.IMAGE_TYPE, "Content-Length": cacheData.length });
+      response.end(cacheData);
     } else {
       try {
         const { path, width, height } = request.query;
@@ -51,7 +50,7 @@ class AssetController {
         height ? (heightInt = parseInt(height)) > this.MAX_H ? this.MAX_H : parseInt(height) : (heightInt = heightInt);
 
         const resizedBuffer = await resize(path, widthInt, heightInt);
-        await this.redis.set(key, resizedBuffer);
+        this.mCache.put(key, resizedBuffer);
 
         response.writeHead(200, { "Content-Type": this.IMAGE_TYPE, "Content-Length": resizedBuffer.length });
         response.end(resizedBuffer);
