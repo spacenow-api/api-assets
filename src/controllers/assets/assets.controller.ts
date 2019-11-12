@@ -15,7 +15,7 @@ class AssetController {
 
   private MAX_H = 2048;
 
-  private IMAGE_TYPE = 'image/png'
+  private IMAGE_TYPE = 'image/jpeg'
 
   public path = "/assets";
 
@@ -37,9 +37,9 @@ class AssetController {
 
   private resizeAsset = async (request: Request, response: Response, next: NextFunction) => {
     const key = "__asset__" + request.originalUrl || request.url;
-    const cacheData = await this.redis.get(key);
+    const cacheData = await this.redis.getBuffer(key);
     if (cacheData) {
-      const resizedBuffer = Buffer.from(cacheData, "base64");
+      const resizedBuffer = cacheData;
       response.writeHead(200, { "Content-Type": this.IMAGE_TYPE, "Content-Length": resizedBuffer.length });
       response.end(resizedBuffer);
     } else {
@@ -51,7 +51,7 @@ class AssetController {
         height ? (heightInt = parseInt(height)) > this.MAX_H ? this.MAX_H : parseInt(height) : (heightInt = heightInt);
 
         const resizedBuffer = await resize(path, widthInt, heightInt);
-        await this.redis.set(key, resizedBuffer.toString('base64'));
+        await this.redis.set(key, resizedBuffer);
 
         response.writeHead(200, { "Content-Type": this.IMAGE_TYPE, "Content-Length": resizedBuffer.length });
         response.end(resizedBuffer);

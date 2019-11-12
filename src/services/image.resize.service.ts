@@ -1,15 +1,28 @@
 import sharp from "sharp";
 import axios from "axios";
+import imagemin from 'imagemin'
+import imageminPngquant from 'imagemin-pngquant'
+import imageminJpegtran from 'imagemin-jpegtran'
 
 const resize = async (path: string, width?: number, height?: number) => {
   const fileResponse = await axios({ url: path, method: "GET", responseType: "arraybuffer" });
   const buffer = Buffer.from(fileResponse.data, "base64");
-  let transform = sharp(buffer);
-  transform = transform.toFormat("png");
+
+  // Compression...
+  const bufferResult = await imagemin.buffer(buffer, {
+    plugins: [
+      imageminJpegtran(),
+      imageminPngquant({ quality: [0.3, 0.5] })
+    ]
+  });
+
+  // Crop and formatting...
+  const transform = sharp(bufferResult).toFormat("jpeg");
   if (width || height) {
-    transform = transform.resize(width, height);
+    transform.resize(width, height);
   }
-  return await transform.toBuffer();
+
+  return transform.toBuffer();
 }
 
 export default resize;

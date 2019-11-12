@@ -18,7 +18,7 @@ const fileExtFilter = (request: Express.Request, file: Express.Multer.File, call
 }
 
 const fileKey = (request: Request, file: any, callback: (error: any, metadata?: any) => void): void => {
-  let ext = 'png';
+  let ext = 'jpeg';
   if (file.mimetype.includes('video'))
     ext = 'mp4';
   return callback(null, `/space-images/${request.params.listingId}/spacenow-${Date.now()}.${ext}`);
