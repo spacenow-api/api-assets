@@ -209,10 +209,20 @@ Resources:
           SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
 
   ElasticacheSecurityGroupd:
-    Type: AWS::ElastiCache::SecurityGroupIngress
+    Type: AWS::ElastiCache::SecurityGroup
     Properties:
-      CacheSecurityGroupName: sg-0dbf2b9d996f4c91e
-      EC2SecurityGroupName: ContainerSecurityGroup
+      GroupDescription:
+        !Join [
+          '',
+          [!Ref ServiceName, ContainerSecurityGroup, '-', !Ref SliceName],
+        ]
+      VpcId:
+        Fn::ImportValue: !Join ['-', [!Ref 'StackName', 'VPC-id']]
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
 
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
