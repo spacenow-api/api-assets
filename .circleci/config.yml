@@ -64,7 +64,7 @@ jobs:
       - save_cache:
           key: v1-awscli
           paths:
-            - "venv"
+            - 'venv'
       - run:
           name: Load image
           command: |
@@ -116,7 +116,7 @@ jobs:
       - save_cache:
           key: v1-awscli
           paths:
-            - "venv"
+            - 'venv'
       - run:
           name: Load image
           command: |
