@@ -27,4 +27,6 @@ RUN yarn build
 
 EXPOSE 6007
 
+ENV NODE_ENV "production"
+
 CMD ["yarn", "prod"]
