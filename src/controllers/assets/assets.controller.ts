@@ -47,7 +47,7 @@ class AssetController {
     const key = '__asset__' + request.originalUrl || request.url;
     const cacheData: any = this.mCache.get(key);
     if (cacheData) {
-      this.getMediaHeaders(res, cacheData).end(cacheData);
+      res.send(cacheData);
     } else {
       try {
         const { path, width, height } = request.query;
@@ -59,7 +59,7 @@ class AssetController {
         const resizedBuffer = await resize(path, widthInt, heightInt);
         this.mCache.put(key, resizedBuffer);
 
-        this.getMediaHeaders(res, resizedBuffer).end(resizedBuffer);
+        res.send(resizedBuffer);
       } catch (err) {
         console.error(err);
         errorMiddleware(err, request, res, next);
