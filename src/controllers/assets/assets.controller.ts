@@ -33,11 +33,21 @@ class AssetController {
     this.router.delete(`${this.path}/:assetId`, this.deleteAsset);
   }
 
-  private resizeAsset = async (request: Request, response: Response, next: NextFunction) => {
+  private getMediaHeaders(response: Response, content: any) {
+    response.writeHead(200, {
+      'Content-Type': 'image/jpeg',
+      'Content-Length': content.length,
+      'Cache-Control': 'private',
+      'max-age': 31536000
+    })
+    return response;
+  }
+
+  private resizeAsset = async (request: Request, res: Response, next: NextFunction) => {
     const key = '__asset__' + request.originalUrl || request.url;
     const cacheData: any = this.mCache.get(key);
     if (cacheData) {
-      response.send(cacheData);
+      this.getMediaHeaders(res, cacheData).end(cacheData);
     } else {
       try {
         const { path, width, height } = request.query;
@@ -49,10 +59,10 @@ class AssetController {
         const resizedBuffer = await resize(path, widthInt, heightInt);
         this.mCache.put(key, resizedBuffer);
 
-        response.send(resizedBuffer);
+        this.getMediaHeaders(res, resizedBuffer).end(resizedBuffer);
       } catch (err) {
         console.error(err);
-        errorMiddleware(err, request, response, next);
+        errorMiddleware(err, request, res, next);
       }
     }
   };
