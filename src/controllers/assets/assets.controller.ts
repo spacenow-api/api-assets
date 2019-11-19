@@ -1,13 +1,13 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction } from 'express';
 import memoryCache from 'memory-cache'
 
-import errorMiddleware from "../../helpers/middlewares/error-middleware";
-import { dynamoDB } from "../../helpers/database/dynamo";
+import errorMiddleware from '../../helpers/middlewares/error-middleware';
+import { dynamoDB } from '../../helpers/database/dynamo';
 
-import { uploadByMulter } from "../../services/image.upload.service";
-import resize from "../../services/image.resize.service";
+import { uploadByMulter } from '../../services/image.upload.service';
+import resize from '../../services/image.resize.service';
 
-import Asset from "../../models";
+import Asset from '../../models';
 
 class AssetController {
 
@@ -15,9 +15,7 @@ class AssetController {
 
   private MAX_H = 2048;
 
-  private IMAGE_TYPE = 'image/jpeg'
-
-  public path = "/assets";
+  public path = '/assets';
 
   private router: Router = Router();
 
@@ -36,11 +34,10 @@ class AssetController {
   }
 
   private resizeAsset = async (request: Request, response: Response, next: NextFunction) => {
-    const key = "__asset__" + request.originalUrl || request.url;
+    const key = '__asset__' + request.originalUrl || request.url;
     const cacheData: any = this.mCache.get(key);
     if (cacheData) {
-      response.writeHead(200, { "Content-Type": this.IMAGE_TYPE, "Content-Length": cacheData.length });
-      response.end(cacheData);
+      response.send(cacheData);
     } else {
       try {
         const { path, width, height } = request.query;
@@ -52,8 +49,7 @@ class AssetController {
         const resizedBuffer = await resize(path, widthInt, heightInt);
         this.mCache.put(key, resizedBuffer);
 
-        response.writeHead(200, { "Content-Type": this.IMAGE_TYPE, "Content-Length": resizedBuffer.length });
-        response.end(resizedBuffer);
+        response.send(resizedBuffer);
       } catch (err) {
         console.error(err);
         errorMiddleware(err, request, response, next);
@@ -88,7 +84,7 @@ class AssetController {
 
   private createAsset = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      await uploadByMulter.single("file")(request, response, async error => {
+      await uploadByMulter.single('file')(request, response, async error => {
         if (error) {
           console.error(error);
           response.send(error);
