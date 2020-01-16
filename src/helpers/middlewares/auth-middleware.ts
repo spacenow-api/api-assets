@@ -11,13 +11,11 @@ import Token from "../utils/token";
 
 import * as config from "./../../config";
 
-const fetchUserById = async (id: string): Promise<string> => {
-  const res = await axios.get(
-    `${config.USERS_API_HOST}/users/legacy/${id}`
-  );
+const fetchUserById = async (id: string): Promise<any> => {
+  const res = await axios.get(`${config.USERS_API_HOST}/users/legacy/${id}`);
   if (res && res.data) {
     const userData: IUser = res.data;
-    return Promise.resolve(userData.email);
+    return Promise.resolve({ email: userData.email, role: userData.role });
   }
   return Promise.reject();
 };
@@ -28,9 +26,10 @@ async function authMiddleware(req: Request, _: Response, next: NextFunction) {
     const secret: string = process.env.JWT_SECRET || "Spacenow";
     try {
       const { id }: any = await jwt.verify(token, secret);
-      const email: string = await fetchUserById(id);
+      const { email, role }: any = await fetchUserById(id);
       console.debug(`User ${email} verified.`);
       req.userIdDecoded = id;
+      req.userRoleDecoded = role;
       next();
     } catch (error) {
       next(new WrongAuthenticationTokenException());

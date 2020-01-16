@@ -1,6 +1,7 @@
 interface IUser {
   id: string;
   email: string;
+  role: string;
   password: string;
   emailConfirmed: number;
   type: string;
