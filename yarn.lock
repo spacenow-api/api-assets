@@ -2234,7 +2234,7 @@ pm2-multimeter@^0.1.2:
   dependencies:
     charm "~0.1.1"
 
-pm2@^4.1.2:
+pm2@~4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/pm2/-/pm2-4.1.2.tgz#97f852c731d307a60dde1ef2fc5a622813ab6cf4"
   integrity sha512-HkNP3K79PmqxkxfgNX/t5rsfWLNMc89KVKDm2Xoju0MU3TbGZSc2rWLZffgEitITsMcPpkKtZmAJBcxMXvURFA==
@@ -2904,8 +2904,9 @@ toposort-class@^1.0.1:
   resolved "https://registry.yarnpkg.com/toposort-class/-/toposort-class-1.0.1.tgz#7ffd1f78c8be28c3ba45cd4e1a3f5ee193bd9988"
 
 tree-kill@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.1.tgz#5398f374e2f292b9dcc7b2e71e30a5c3bb6c743a"
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
+  integrity sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==
 
 trim-newlines@^1.0.0:
   version "1.0.0"
