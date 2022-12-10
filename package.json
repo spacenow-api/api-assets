@@ -27,7 +27,7 @@
     "cookie-parser": "~1.4.4",
     "cors": "~2.8.5",
     "dotenv": "~8.0.0",
-    "express": "~4.17.0",
+    "express": "~4.17.3",
     "form-data": "~2.5.0",
     "imagemin": "~7.0.0",
     "jsonwebtoken": "~8.5.1",
